@@ -17,6 +17,7 @@ env:
   MESSENGER_TRANSPORT_DSN: doctrine://default
   latest_php: 8.3
   DOCKER_BUILDKIT: 1
+  ILIOS_DATABASE_URL: 'mysql://root:root@127.0.0.1:3306/ilios?serverVersion=8.0'
 
 jobs:
   code_style:
@@ -75,6 +76,8 @@ jobs:
         coverage: pcov
         php-version: ${{ matrix.php-version }}
         extensions: apcu
+    - name: Start database
+      run: sudo systemctl start mysql.service
     - name: install dependencies
       run: composer install --no-interaction --prefer-dist
     - name: Run Tests
@@ -102,8 +105,6 @@ jobs:
     - name: install dependencies
       run: composer install --no-interaction --prefer-dist
     - name: Drop, Create, Migrate, and Validate DB
-      env:
-        ILIOS_DATABASE_URL: mysql://root:root@127.0.0.1:3306/ilios?serverVersion=8.0
       run: |
         sudo systemctl start mysql.service
         bin/console doctrine:database:drop --if-exists --force
@@ -128,6 +129,8 @@ jobs:
         coverage: none
         php-version: ${{ matrix.php-version }}
         extensions: apcu
+    - name: Start database
+      run: sudo systemctl start mysql.service
     - name: install dependencies
       run: composer install --no-interaction --prefer-dist
     - name: First Run
@@ -207,7 +210,6 @@ jobs:
     needs: build_amd_containers
     runs-on: ubuntu-latest
     env:
-      ILIOS_DATABASE_URL: mysql://root:root@127.0.0.1:3306/ilios?serverVersion=8.0
       ILIOS_SECRET: DifferentSecret
       ILIOS_FILE_SYSTEM_STORAGE_PATH: /tmp
     steps:

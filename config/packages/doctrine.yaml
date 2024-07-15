@@ -39,9 +39,8 @@ when@test:
             default_connection: default
             connections:
                 default:
-                    driver: pdo_sqlite
-                    # "TEST_TOKEN" is typically set by ParaTest
-                    path: "%kernel.cache_dir%/test_%env(default::TEST_TOKEN)%.db"
+                    url: '%env(resolve:ILIOS_DATABASE_URL)%'
+                    driver: 'pdo_mysql'
                     logging: false
                     profiling: false
 
